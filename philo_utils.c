@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 12:50:26 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/04 11:10:42 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/10 12:52:48 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	ft_atoi(const char *n)
 int	get_time(t_data *data)
 {
 	struct timeval	tv;
-
+	
 	gettimeofday(&tv, NULL);
-	return (tv.tv_usec - data->start_time);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000)) - data->start_time;
 }

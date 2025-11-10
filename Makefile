@@ -6,7 +6,7 @@
 #    By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 13:13:43 by djareno           #+#    #+#              #
-#    Updated: 2025/10/28 12:51:26 by djareno          ###   ########.fr        #
+#    Updated: 2025/11/10 11:07:16 by djareno          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ NAME        = philo
 
 SRCS         = philo.c \
 				philo_utils.c \
+				philo_actions.c \
 
 OBJS        = $(SRCS:.c=.o)
 

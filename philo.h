@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 11:01:29 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/04 11:11:28 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/10 12:04:39 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ typedef struct s_philo
 {
 	int				id;
 	pthread_t		thread;
-	pthread_mutex_t	left_fork;
-	pthread_mutex_t	right_fork;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
 	long			last_meal;
 	int				times_eat;
 	struct s_data	*data;
@@ -40,8 +40,12 @@ typedef struct s_data
 	pthread_mutex_t	*monitormx;
 	int				ready;
 	pthread_mutex_t	*forks;
+	int				deadphilo;
 }		t_data;
 
 int		ft_atoi(const char *n);
 int		get_time(t_data *data);
+void	eat(t_philosopher *philo);
+void	philo_sleep(t_philosopher *philo);
+void	amidead(t_philosopher *philo);
 #endif
