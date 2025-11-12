@@ -6,7 +6,7 @@
 #    By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 13:13:43 by djareno           #+#    #+#              #
-#    Updated: 2025/11/10 11:07:16 by djareno          ###   ########.fr        #
+#    Updated: 2025/11/12 12:25:54 by djareno          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,12 +15,13 @@ NAME        = philo
 SRCS         = philo.c \
 				philo_utils.c \
 				philo_actions.c \
+				philosophers.c \
 
 OBJS        = $(SRCS:.c=.o)
 
 CC          = cc
 
-CFLAGS      = -Wall -Wextra -Werror -pthread
+CFLAGS      = -Wall -Wextra -Werror -pthread -g3
 
 RM          = rm -f
 

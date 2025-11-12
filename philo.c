@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 14:44:32 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/10 12:54:23 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/12 13:03:32 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,65 +21,88 @@ void	*philo_loop(void *arg)
 	x = 0;
 	if (philo->id % 2 == 0)
 		usleep (50);
-	//pthread_mutex_lock(philo->data->monitormx);
 	while (philo->data->ready != 0)
-	{
 		usleep(40);
-	}
-	//pthread_mutex_unlock(philo->data->monitormx);
-	while (philo->times_eat != philo->data->times_eat
+	while (philo->times_eat < philo->data->times_eat
 		|| philo->data->times_eat == -1)
 	{
-		amidead(philo);
-		if (philo->data->deadphilo == 1)
+		if (is_dead(philo->data))
 			break ;
 		eat(philo);
+		if (is_dead(philo->data))
+			break ;
 		philo_sleep(philo);
+		if (philo->data->philo_num % 2 != 0)
+			usleep(1000);
 	}
 	return (0);
 }
 
-void	create_philos(t_data *data)
+void	*monitor(void *arg)
 {
-	t_philosopher	*p;
-	pthread_mutex_t	*forks;
-	int				x;
+	t_data			*data;
+	int				i;
 
-	p = malloc(sizeof(t_philosopher) * data->philo_num);
-	forks = malloc(sizeof(pthread_mutex_t) * data->philo_num);
+	data = (t_data *)arg;
+	while (!data->deadphilo && data->finished != 1)
+	{
+		i = 0;
+		while (i < data->philo_num)
+		{
+			pthread_mutex_lock(data->monitormx);
+			if (get_time(data) - data->p[i].last_meal >= data->time_to_die
+				&& data->p[i].times_eat != data->times_eat)
+			{
+				printf("[%d] %d died\n", get_time(data), data->p[i].id);
+				data->deadphilo = 1;
+				return (pthread_mutex_unlock(data->monitormx), NULL);
+			}
+			pthread_mutex_unlock(data->monitormx);
+			i++;
+		}
+		if (data->deadphilo == 1)
+			break ;
+		usleep(3000);
+	}
+	return (NULL);
+}
+
+void	start_monitor(t_data *data)
+{
+	int				x;
+	pthread_t		monitor_thread;
+
+	x = 0;
+	pthread_mutex_lock(data->monitormx);
+	data->ready = -1;
+	create_philosophers(data);
+	data->ready = 0;
+	pthread_mutex_unlock(data->monitormx);
+	pthread_create(&monitor_thread, NULL, monitor, (void *)data);
+	pthread_join(monitor_thread, NULL);
 	x = 0;
 	while (x < data->philo_num)
 	{
-		pthread_mutex_init(&forks[x], NULL);
+		pthread_join(data->p[x].thread, NULL);
 		x++;
 	}
+	pthread_mutex_destroy(data->monitormx);
 	x = 0;
 	while (x < data->philo_num)
 	{
-		p[x].data = data;
-		p[x].id = x + 1;
-		p[x].times_eat = 0;
-		p[x].last_meal = data->start_time;
-		p[x].left_fork = &forks[x];
-		if (x < data->philo_num - 1)
-			p[x].right_fork = &forks[x + 1];
-		else
-			p[x].right_fork = &forks[0];
-		pthread_create(&p[x].thread, NULL, philo_loop, (void *)&p[x]);
-		printf("%d is created\n", p[x].id);
+		pthread_mutex_destroy(&data->forks[x]);
 		x++;
 	}
-	data->philosophers = p;
-	data->forks = forks;
 }
 
 int	parse_args(t_data *data, int argc, char **argv)
 {
 	pthread_mutex_t	mutex;
-	int				x;
 	struct timeval	tv;
 
 	if (argc < 5 || argc > 6)
+		return (-1);
+	if (valid_args(argc, argv) == -1)
 		return (-1);
 	pthread_mutex_init(&mutex, NULL);
 	gettimeofday(&tv, NULL);
@@ -88,26 +111,15 @@ int	parse_args(t_data *data, int argc, char **argv)
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
 	data->time_to_sleep = ft_atoi(argv[4]);
+	data->finished = 0;
+	data->total_times_eat = 0;
 	data->monitormx = &mutex;
 	data->deadphilo = 0;
 	if (argc == 6)
 		data->times_eat = ft_atoi(argv[5]);
 	else
 		data->times_eat = -1;
-	pthread_mutex_lock(data->monitormx);
-	data->ready = -1;
-	create_philos(data);
-	data->ready = 0;
-	pthread_mutex_unlock(data->monitormx);
-	x = 0;
-	while (x < data->philo_num)
-	{
-		pthread_join(data->philosophers[x].thread, NULL);
-		pthread_mutex_lock(data->monitormx);
-		printf("[%d] %d has stopped\n", get_time(data) , data->philosophers[x].id);
-		pthread_mutex_unlock(data->monitormx);
-		x++;
-	}
+	start_monitor(data);
 	return (1);
 }
 
@@ -116,6 +128,13 @@ int	main(int argc, char **argv)
 	t_data			*data;
 
 	data = malloc (sizeof(t_data));
-	parse_args(data, argc, argv);
+	if (parse_args(data, argc, argv) == -1)
+	{
+		free(data);
+		return (-1);
+	}
+	free (data->forks);
+	free(data->p);
+	free (data);
 	return (0);
 }

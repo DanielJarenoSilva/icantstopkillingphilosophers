@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 11:01:29 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/10 12:04:39 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/12 13:08:00 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ typedef struct s_data
 	int				philo_num;
 	int				start_time;
 	int				times_eat;
-	t_philosopher	*philosophers;
+	int				finished;
+	int				total_times_eat;
+	t_philosopher	*p;
 	pthread_mutex_t	*monitormx;
 	int				ready;
 	pthread_mutex_t	*forks;
@@ -48,4 +50,9 @@ int		get_time(t_data *data);
 void	eat(t_philosopher *philo);
 void	philo_sleep(t_philosopher *philo);
 void	amidead(t_philosopher *philo);
+void	ft_usleep(int time_in_ms, t_philosopher *philo);
+void	create_philosophers(t_data *data);
+void	*philo_loop(void *arg);
+int		valid_args(int argc, char **argv);
+int		is_dead(t_data *data);
 #endif
