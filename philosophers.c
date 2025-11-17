@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 12:25:44 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/12 12:59:40 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/14 10:46:35 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	create_philo(t_data *data, pthread_mutex_t *forks)
 		p[x].data = data;
 		p[x].id = x + 1;
 		p[x].times_eat = 0;
-		p[x].last_meal = data->start_time;
+		p[x].last_meal = get_time(data);
 		p[x].left_fork = &forks[x];
 		if (x < data->philo_num - 1)
 			p[x].right_fork = &forks[x + 1];

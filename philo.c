@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 14:44:32 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/12 13:03:32 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/14 10:55:35 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	*monitor(void *arg)
 	while (!data->deadphilo && data->finished != 1)
 	{
 		i = 0;
-		while (i < data->philo_num)
+		while (i < data->philo_num && data->deadphilo != 1)
 		{
 			pthread_mutex_lock(data->monitormx);
 			if (get_time(data) - data->p[i].last_meal >= data->time_to_die
