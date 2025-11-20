@@ -6,11 +6,18 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 14:44:32 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/20 11:10:27 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/20 13:05:12 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	waitmonitor(t_data *data)
+{
+	pthread_mutex_unlock(data->monitormx);
+	usleep(3000);
+	pthread_mutex_lock(data->monitormx);
+}
 
 void	*monitor(void *arg)
 {
@@ -35,9 +42,7 @@ void	*monitor(void *arg)
 		}
 		if (data->deadphilo == 1)
 			break ;
-		pthread_mutex_unlock(data->monitormx);
-		usleep(3000);
-		pthread_mutex_lock(data->monitormx);
+		waitmonitor(data);
 	}
 	pthread_mutex_unlock(data->monitormx);
 	return (NULL);

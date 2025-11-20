@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/12 12:25:44 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/20 10:48:01 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/20 13:06:56 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,13 @@ int	is_dead(t_data *data)
 	return (ret);
 }
 
+void	philowait(t_philosopher *philo)
+{
+	pthread_mutex_unlock(philo->data->monitormx);
+	usleep(40);
+	pthread_mutex_lock(philo->data->monitormx);
+}
+
 void	*philo_loop(void *arg)
 {
 	int				x;
@@ -73,11 +80,7 @@ void	*philo_loop(void *arg)
 		usleep (50);
 	pthread_mutex_lock(philo->data->monitormx);
 	while (philo->data->ready != 0)
-	{
-		pthread_mutex_unlock(philo->data->monitormx);
-		usleep(40);
-		pthread_mutex_lock(philo->data->monitormx);
-	}
+		philowait(philo);
 	pthread_mutex_unlock(philo->data->monitormx);
 	while (philo->times_eat < philo->data->times_eat
 		|| philo->data->times_eat == -1)
