@@ -6,37 +6,11 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 14:44:32 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/14 10:55:35 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/20 11:10:27 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	*philo_loop(void *arg)
-{
-	int				x;
-	t_philosopher	*philo;
-
-	philo = (t_philosopher *) arg;
-	x = 0;
-	if (philo->id % 2 == 0)
-		usleep (50);
-	while (philo->data->ready != 0)
-		usleep(40);
-	while (philo->times_eat < philo->data->times_eat
-		|| philo->data->times_eat == -1)
-	{
-		if (is_dead(philo->data))
-			break ;
-		eat(philo);
-		if (is_dead(philo->data))
-			break ;
-		philo_sleep(philo);
-		if (philo->data->philo_num % 2 != 0)
-			usleep(1000);
-	}
-	return (0);
-}
 
 void	*monitor(void *arg)
 {
@@ -44,26 +18,28 @@ void	*monitor(void *arg)
 	int				i;
 
 	data = (t_data *)arg;
+	pthread_mutex_lock(data->monitormx);
 	while (!data->deadphilo && data->finished != 1)
 	{
 		i = 0;
 		while (i < data->philo_num && data->deadphilo != 1)
 		{
-			pthread_mutex_lock(data->monitormx);
 			if (get_time(data) - data->p[i].last_meal >= data->time_to_die
 				&& data->p[i].times_eat != data->times_eat)
 			{
-				printf("[%d] %d died\n", get_time(data), data->p[i].id);
+				printf("%d %d died\n", get_time(data), data->p[i].id);
 				data->deadphilo = 1;
 				return (pthread_mutex_unlock(data->monitormx), NULL);
 			}
-			pthread_mutex_unlock(data->monitormx);
 			i++;
 		}
 		if (data->deadphilo == 1)
 			break ;
+		pthread_mutex_unlock(data->monitormx);
 		usleep(3000);
+		pthread_mutex_lock(data->monitormx);
 	}
+	pthread_mutex_unlock(data->monitormx);
 	return (NULL);
 }
 
@@ -73,9 +49,9 @@ void	start_monitor(t_data *data)
 	pthread_t		monitor_thread;
 
 	x = 0;
-	pthread_mutex_lock(data->monitormx);
 	data->ready = -1;
 	create_philosophers(data);
+	pthread_mutex_lock(data->monitormx);
 	data->ready = 0;
 	pthread_mutex_unlock(data->monitormx);
 	pthread_create(&monitor_thread, NULL, monitor, (void *)data);

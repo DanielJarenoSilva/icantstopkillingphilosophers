@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 11:01:29 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/12 13:08:00 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/19 10:55:40 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,5 @@ void	create_philosophers(t_data *data);
 void	*philo_loop(void *arg);
 int		valid_args(int argc, char **argv);
 int		is_dead(t_data *data);
+void	*philo_loop(void *arg);
 #endif

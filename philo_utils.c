@@ -6,7 +6,7 @@
 /*   By: djareno <djareno@student.42madrid.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 12:50:26 by djareno           #+#    #+#             */
-/*   Updated: 2025/11/12 12:54:56 by djareno          ###   ########.fr       */
+/*   Updated: 2025/11/17 13:10:18 by djareno          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,7 @@ int	valid_args(int argc, char **argv)
 			return (-1);
 		}
 	}
+	if (ft_atoi(argv[1]) == 0)
+		return (-1);
 	return (0);
 }
